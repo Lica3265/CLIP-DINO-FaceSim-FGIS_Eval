@@ -74,37 +74,35 @@ def main():
     # 計算成功率
     success_rates = {model: (success_counts[model] / len(reference_images)) * 100 for model in success_counts}
 
-    # 生成 LaTeX 表格
-    latex_table = """
-    \\begin{table}[h]
-        \\centering
-        \\begin{tabular}{|c|c|c|c|c|c|c|}
-            \\hline
-            \\textbf{模型} & \\textbf{CLIP-T (\\%)} & \\textbf{CLIP-I (\\%)} & \\textbf{DINO (\\%)} & \\textbf{FaceSim (\\%)} & \\textbf{FGIS (\\%)} & \\textbf{Success Rate (\\%)} \\\\
-            \\hline
-    """
-    
+    metrics_list = list(next(iter(avg_scores.values())).keys())
+
+    latex_table = "\\begin{table}[h]\n    \\centering\n    \\begin{tabular}{|" + "|".join(["c"] * (len(metrics_list) + 2)) + "|}\n"
+    latex_table += "    \\hline\n    \\textbf{模型} & " + " & ".join([f"\\textbf{{{metric} (\\%)}}" for metric in metrics_list]) + " & \\textbf{Success Rate (\\%)} \\\\\n    \\hline\n"
+
     for model, metrics in avg_scores.items():
-        latex_table += f"{model} & {metrics['CLIP-T'] * 100:.2f} & {metrics['CLIP-I'] * 100:.2f} & {metrics['DINO'] * 100:.2f} & {metrics['FaceSim'] * 100:.2f} & {metrics['FGIS'] * 100:.2f} & {success_rates[model]:.2f} \\\\\n"
+        values = " & ".join([f"{metrics[metric] * 100:.2f}" for metric in metrics_list])
+        latex_table += f"    {model} & {values} & {success_rates[model]:.2f} \\\\\n"
 
-    latex_table += """
-            \\hline
-        \\end{tabular}
-        \\caption{各模型的平均相似度與成功率分析}
-        \\label{tab:similarity}
-    \\end{table}
-    """
+    latex_table += "    \\hline\n    \\end{tabular}\n    \\caption{各模型的平均相似度與成功率分析}\n    \\label{tab:similarity}\n\\end{table}\n"
 
-    # 儲存至 `.tex` 文件
+    # **輸出 LaTeX 表格**
     with open("results.tex", "w", encoding="utf-8") as f:
         f.write(latex_table)
-    print("✅ 已完成計算，LaTeX 表格已儲存至 `results.tex`！")
+
+    header = "| 模型名   | " + " | ".join([f"{metric} (%)" for metric in metrics_list]) + " | Success Rate (%) |"
+    separator = "|---------|" + "|".join(["-----------"] * (len(metrics_list) + 1)) + "|"
+
     print("\n⭐ 各模型的平均相似度與成功率分析 ⭐")
-    print("| 模型名   | CLIP-T (%) | CLIP-I (%)| DINO (%) | FaceSim (%) | FGIS (%) | Success Rate (%) |")
-    print("|---------|-----------|-----------|---------|------------|--------|--------------|")
+    print(header)
+    print(separator)
 
     for model, metrics in avg_scores.items():
-        print(f"| {model} | {metrics['CLIP-T'] * 100:.2f} | {metrics['CLIP-I'] * 100:.2f} |{metrics['DINO'] * 100:.2f} | {metrics['FaceSim'] * 100:.2f} | {metrics['FGIS'] * 100:.2f} | {success_rates[model]:.2f} |")
+        values = " | ".join([f"{metrics[metric] * 100:.2f}" for metric in metrics_list])
+        print(f"| {model} | {values} | {success_rates[model]:.2f} |")
+
+
+    # for model, metrics in avg_scores.items():
+    #     print(f"| {model} | {metrics['CLIP-T'] * 100:.2f} | {metrics['CLIP-I'] * 100:.2f} |{metrics['DINO'] * 100:.2f} | {metrics['FaceSim'] * 100:.2f} | {metrics['FGIS'] * 100:.2f} | {success_rates[model]:.2f} |")
 
 if __name__ == "__main__":
     main()
