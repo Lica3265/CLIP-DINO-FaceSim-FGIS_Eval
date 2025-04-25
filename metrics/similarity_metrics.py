@@ -8,6 +8,11 @@ def evaluate_clip_text_image_similarity(clip_model, text, image):
     image_features = clip_model.encode_image(image)
     return cosine_similarity(text_features, image_features)
 
+def evaluate_clip_image_similarity(clip_model, image1, image2):
+    image1_features = clip_model.encode_image(image1)
+    image2_features = clip_model.encode_image(image2)
+    return cosine_similarity(image1_features, image2_features)
+
 def evaluate_dino_image_similarity(dino_model, image1, image2):
     image1_features = dino_model.encode_image(image1)
     image2_features = dino_model.encode_image(image2)
