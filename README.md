@@ -1,18 +1,10 @@
-Image-Similarity-Metrics
-project/
-├── models/
-│   ├── clip_model.py       # CLIP 模型封裝
-│   ├── dino_model.py       # DINO 模型封裝
-│   ├── facesim_model.py    # FaceSim 模型封裝
-│   ├── fgis_model.py       # FGIS 模型封裝
-├── metrics/
-│   ├── similarity_metrics.py   # 指標計算函數
-├── main.py                # 主程式入口
-├── requirements.txt       # 依賴列表
-└── README.md              # 項目文檔
+## CLIP-DINO-FaceSim-FGIS_Eval
+
 
 A deep learning-based framework for evaluating image similarity using CLIP, DINO, FaceSim, and FGIS models.
-Overview
+
+# Overview
+
 This repository provides a framework for evaluating image similarity based on multiple AI models. It supports text-to-image and image-to-image comparison using CLIP, DINO, FaceSim, and FGIS.
 Features
 
@@ -25,31 +17,31 @@ Features
 ✅ FGIS for Fine-Grained Image Similarity
 
 
-Installation
+## Installation
 1. Clone the repository
-git clone git@github.com:Lica3265/CLIP-DINO-FaceSim-FGIS_Eval.git
-cd Image-Similarity-Metrics
+```git clone git@github.com:Lica3265/CLIP-DINO-FaceSim-FGIS_Eval.git```
+```cd CLIP-DINO-FaceSim-FGIS_Eval```
 
 
 2. Create and activate virtual environment
-conda create --name image_similarity_env python=3.10 -y
-conda activate image_similarity_env
+```conda create --name image_similarity_env python=3.10 -y```
+```conda activate image_similarity_env```
 
 
 3. Install dependencies
-pip install -r requirements.txt
+```pip install -r requirements.txt```
 
 
 
-Usage
+## Usage
 Run the evaluation script:
-python main.py
+```python main.py```
 
 
 Ensure that images are stored in the data/ folder before running the script.
 
-Contributing
+## Contributing
 Feel free to contribute by improving the models or adding new similarity metrics! Create a pull request if you have enhancements.
 
-License
+## License
 This project is licensed under the MIT License—see the LICENSE file for details
