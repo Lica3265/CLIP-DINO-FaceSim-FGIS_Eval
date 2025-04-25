@@ -1,11 +1,10 @@
+# main.py
 import torch
-from PIL import Image
-import numpy as np
 import os
-from models.clip_model import CLIPModel
-from models.dino_model import DINOModel
-from models.facesim_model import FaceSimModel
-from models.fgis_model import FGISModel
+import numpy as np
+from PIL import Image
+
+from model_factory import ModelFactory
 from metrics.similarity_metrics import (
     evaluate_clip_text_image_similarity,
     evaluate_clip_image_similarity,
@@ -17,11 +16,13 @@ from metrics.similarity_metrics import (
 def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    # 初始化模型
-    clip_model = CLIPModel(device)
-    dino_model = DINOModel(device)
-    facesim_model = FaceSimModel(device)
-    fgis_model = FGISModel(device)
+    # 使用工廠模式來初始化模型
+    models = {name: ModelFactory.create_model(name, device) for name in ["CLIP", "DINO", "FaceSim", "FGIS"]}
+
+    clip_model = models["CLIP"]
+    dino_model = models["DINO"]
+    facesim_model = models["FaceSim"]
+    fgis_model = models["FGIS"]
 
     # 設定基準圖片與生成模型目錄
     reference_folder = "data/reference_images/"
@@ -34,7 +35,7 @@ def main():
     reference_images = [os.path.join(reference_folder, f) for f in os.listdir(reference_folder) if f.endswith(('.jpg', '.png'))]
 
     # 儲存所有指標結果
-    scores = {model: {"CLIP-T": [],"CLIP-I": [], "DINO": [], "FaceSim": [], "FGIS": []} for model in generated_folders}
+    scores = {model: {"CLIP-T": [], "CLIP-I": [], "DINO": [], "FaceSim": [], "FGIS": []} for model in generated_folders}
     success_counts = {model: 0 for model in generated_folders}  # 計算成功率
 
     for ref_path in reference_images:
@@ -49,8 +50,8 @@ def main():
                 gen_image = Image.open(gen_image_path).convert("RGB")
 
                 # 計算相似度指標
-                clip_t_score = evaluate_clip_text_image_similarity(clip_model,text_input, gen_image)
-                clip_i_score = evaluate_clip_image_similarity(clip_model,ref_image, gen_image)
+                clip_t_score = evaluate_clip_text_image_similarity(clip_model, text_input, gen_image)
+                clip_i_score = evaluate_clip_image_similarity(clip_model, ref_image, gen_image)
                 dino_score = evaluate_dino_image_similarity(dino_model, ref_image, gen_image)
                 facesim_score = evaluate_facesim_similarity(facesim_model, ref_image, gen_image)
                 fgis_score = evaluate_fgis_similarity(fgis_model, ref_image, gen_image)
@@ -73,6 +74,7 @@ def main():
     # 計算成功率
     success_rates = {model: (success_counts[model] / len(reference_images)) * 100 for model in success_counts}
 
+    # 生成 LaTeX 表格
     latex_table = """
     \\begin{table}[h]
         \\centering
@@ -81,7 +83,7 @@ def main():
             \\textbf{模型} & \\textbf{CLIP-T (\\%)} & \\textbf{CLIP-I (\\%)} & \\textbf{DINO (\\%)} & \\textbf{FaceSim (\\%)} & \\textbf{FGIS (\\%)} & \\textbf{Success Rate (\\%)} \\\\
             \\hline
     """
-
+    
     for model, metrics in avg_scores.items():
         latex_table += f"{model} & {metrics['CLIP-T'] * 100:.2f} & {metrics['CLIP-I'] * 100:.2f} & {metrics['DINO'] * 100:.2f} & {metrics['FaceSim'] * 100:.2f} & {metrics['FGIS'] * 100:.2f} & {success_rates[model]:.2f} \\\\\n"
 
@@ -93,11 +95,9 @@ def main():
     \\end{table}
     """
 
-    # 修正編碼問題
+    # 儲存至 `.tex` 文件
     with open("results.tex", "w", encoding="utf-8") as f:
         f.write(latex_table)
-
-
     print("✅ 已完成計算，LaTeX 表格已儲存至 `results.tex`！")
     print("\n⭐ 各模型的平均相似度與成功率分析 ⭐")
     print("| 模型名   | CLIP-T (%) | CLIP-I (%)| DINO (%) | FaceSim (%) | FGIS (%) | Success Rate (%) |")
