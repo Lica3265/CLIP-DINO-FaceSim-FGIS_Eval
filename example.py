@@ -6,6 +6,7 @@ from models.facesim_model import FaceSimModel
 from models.fgis_model import FGISModel
 from metrics.similarity_metrics import (
     evaluate_clip_text_image_similarity,
+    evaluate_clip_image_similarity,
     evaluate_dino_image_similarity,
     evaluate_facesim_similarity,
     evaluate_fgis_similarity
@@ -28,11 +29,13 @@ def main():
     image2 = Image.open(image_path2).convert('RGB')
 
     clip_score = evaluate_clip_text_image_similarity(clip_model, text_input, image1)
+    clip_image_score = evaluate_clip_image_similarity(clip_model, image1, image2)
     dino_score = evaluate_dino_image_similarity(dino_model, image1, image2)
     facesim_score = evaluate_facesim_similarity(facesim_model, image1, image2)
     fgis_score = evaluate_fgis_similarity(fgis_model, image1, image2)
 
     print(f"CLIP-T Text-Image Similarity: {clip_score * 100:.2f}%")
+    print(f"CLIP-I Text-Image Similarity: {clip_image_score * 100:.2f}%")
     print(f"DINO Image-Image Similarity: {dino_score * 100:.2f}%")
     print(f"FaceSim Similarity: {facesim_score * 100:.2f}%")
     print(f"FGIS Similarity: {fgis_score * 100:.2f}%")
