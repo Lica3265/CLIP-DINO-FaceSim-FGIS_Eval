@@ -19,22 +19,26 @@ Features
 
 ## Installation
 1. Clone the repository
+
 ```git clone git@github.com:Lica3265/CLIP-DINO-FaceSim-FGIS_Eval.git```
 ```cd CLIP-DINO-FaceSim-FGIS_Eval```
 
 
 2. Create and activate virtual environment
+
 ```conda create --name image_similarity_env python=3.10 -y```
 ```conda activate image_similarity_env```
 
 
 3. Install dependencies
+
 ```pip install -r requirements.txt```
 
 
 
 ## Usage
 Run the evaluation script:
+
 ```python main.py```
 
 
