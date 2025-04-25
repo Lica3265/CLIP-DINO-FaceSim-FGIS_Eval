@@ -1,0 +1,6 @@
+*.tex
+data/InstantID/*
+data/Me2Meme/*
+data/LoRAs/*
+data/reference_images/*
+__pycache__/
